@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlert, Mail, Pen, Send, User } from "lucide-react";
+import { CircleAlert, Loader, Mail, Pen, Send, User } from "lucide-react";
 import { useState } from "react";
 import { SendEmailToAdmin, SendEmailToUser } from "./sendEmail";
 import axios from "axios";
@@ -12,6 +12,7 @@ export const ContactUs = () => {
     companyName: "",
     message: "",
   });
+  const [loader, setLoader] = useState<boolean>(false);
 
   const onInputChange = (e: any) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -19,6 +20,8 @@ export const ContactUs = () => {
 
   const sendMessage = async () => {
     try {
+      setLoader(true);
+
       // API end point for sending email
       await axios.post("/api/email", data);
 
@@ -28,6 +31,8 @@ export const ContactUs = () => {
       data.name = "";
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -116,10 +121,16 @@ export const ContactUs = () => {
         {/* Send Message */}
         <button
           onClick={sendMessage}
-          className="w-fit flex items-center gap-3 px-10 py-4 bg-green-500 rounded-full text-white"
+          disabled={loader}
+          className="w-fit disabled:bg-green-300  px-10 py-4 bg-green-500 rounded-full text-white"
         >
-          {" "}
-          <Send /> Get In Touch{" "}
+          {loader ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <div className="flex items-center gap-3">
+              <Send /> Get In Touch
+            </div>
+          )}
         </button>
       </div>
     </div>
